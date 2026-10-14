@@ -16,6 +16,7 @@
 - [How buying a home works in South Carolina](https://jimmyardis.github.io/james-nowlin1/buy/)
 - [How selling a home works in South Carolina](https://jimmyardis.github.io/james-nowlin1/sell/)
 - [Frequently asked questions](https://jimmyardis.github.io/james-nowlin1/faq/)
+- [Homeowner and new-resident resources: taxes, utilities, schools](https://jimmyardis.github.io/james-nowlin1/resources/)
 - [About James Nowlin](https://jimmyardis.github.io/james-nowlin1/about/)
 - [Contact](https://jimmyardis.github.io/james-nowlin1/contact/)
 

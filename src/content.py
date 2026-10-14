@@ -353,7 +353,7 @@ FAQ = [
     ]),
     ("Taxes and costs", [
         ("How do property taxes work in Lexington and Richland counties?",
-         "Your primary home is taxed on 4% of its assessed value, while second homes and rentals are taxed on 6%, so the primary residence rate saves a lot. The 4% rate isn't automatic: you have to apply with the county assessor, ideally right after you close. The tax rate (millage) also varies by county, school district and city, which is why two similar homes can have different tax bills."),
+         "Your primary home is taxed on 4% of its assessed value, while second homes and rentals are taxed on 6%, so the primary residence rate saves a lot. The 4% rate isn't automatic: you apply with the county assessor after closing, and you'll need an SC driver's license and vehicle registration showing the new address. The tax rate (millage) also varies by county, school district and city, which is why two similar homes can have different tax bills."),
         ("Is there a property tax break for seniors in South Carolina?",
          "Yes. Homeowners who are 65 or older, totally disabled or legally blind can qualify for the homestead exemption, which removes the first $50,000 of the home's value from property taxes. You apply through the county auditor."),
         ("How much does it cost to sell a house in South Carolina?",

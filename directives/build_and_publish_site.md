@@ -16,6 +16,7 @@ SC license #129577), hosted on GitHub Pages from `docs/`.
 | `screenshot.py [paths]` | Serves `docs/` locally, screenshots desktop (1366) + mobile (390), flags overflow and console errors |
 | `commons_search.py "<query>"` | Lists free-licensed Commons photos (title, size, license, artist) |
 | `commons_download.py picks.json outdir` | Downloads chosen photos at 1280px and records credits; resumable |
+| `check_links.py` | Verifies every resources-page URL (status, redirects, non-HTML targets). Run before each publish |
 
 ## Steps
 1. Edit `src/content.py`.
@@ -39,7 +40,20 @@ absolute canonicals; then set the domain in the repo's Pages settings and add DN
 - Listings and lead capture stay in James's Realty ONE Group tools (search, home value, ONE app),
   which keeps IDX rules satisfied and leads in his CRM.
 
+## Resources page (/resources/)
+Data lives in `src/resources.py`: the ordered new-resident checklist plus grouped official links, each
+tagged by county for the on-page filter. Run `check_links.py` before publishing; update a URL to its
+final redirect target when one is reported. Only link providers whose official domain is confirmed;
+when unsure, link the county's own utility-provider list instead.
+
 ## Learned (edge cases)
+- Guessed domains are often wrong (JMWSC is lcjmwsc.com, Lexington Two is lex2.org). Confirm every
+  domain from a search result or the county's own nav; never publish a guessed URL.
+- richlandcountysc.gov (and a few others) return 403 to scripts; confirm those by search, then list
+  them in `resources.VERIFIED_MANUALLY`. One city "utilities" URL 200'd but redirected to a JPG, so
+  the checker now fails non-HTML targets.
+- SC sequence for new residents: county vehicle tax -> DMV registration (45 days) -> SC license
+  (90 days) -> 4% legal residence application, which requires the SC license and registration.
 - Wikimedia Commons rate-limits hard (HTTP 429, Retry-After up to 600s). Request only standard thumb
   widths (1280); non-standard widths (1600) triggered the long waits. Batch metadata in one API call.
 - The downloader must fetch bytes before creating the file; otherwise an interrupted run leaves a

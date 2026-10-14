@@ -10,6 +10,19 @@
     });
   }
 
+  // Resources page: county filter (region-wide links always stay visible)
+  var filter = document.querySelector(".county-filter");
+  if (filter) {
+    filter.hidden = false;
+    filter.addEventListener("change", function (ev) {
+      var pick = ev.target.value;
+      document.querySelectorAll(".res").forEach(function (li) {
+        var c = li.getAttribute("data-county");
+        li.hidden = !(pick === "all" || c === "all" || c === pick || (pick === "richland" && c === "fairfield"));
+      });
+    });
+  }
+
   var form = document.getElementById("msg");
   if (form) {
     form.addEventListener("submit", function (ev) {

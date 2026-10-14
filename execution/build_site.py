@@ -14,6 +14,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from content import AGENT, AREAS, FAQ, SITE_NAME  # noqa: E402
+from resources import NEW_RESIDENT_STEPS, RESOURCES  # noqa: E402
 
 SITE_URL = os.environ.get("SITE_URL", "https://jimmyardis.github.io/james-nowlin1").rstrip("/")
 BASE = os.environ.get("BASE_PATH", "/james-nowlin1").rstrip("/")
@@ -207,7 +208,7 @@ def faq_schema(qas):
 # ---------------------------------------------------------------------------
 # Layout
 # ---------------------------------------------------------------------------
-NAV = [("Areas", "/areas/"), ("Buy", "/buy/"), ("Sell", "/sell/"), ("FAQ", "/faq/"), ("About", "/about/"), ("Contact", "/contact/")]
+NAV = [("Areas", "/areas/"), ("Buy", "/buy/"), ("Sell", "/sell/"), ("Resources", "/resources/"), ("FAQ", "/faq/"), ("About", "/about/"), ("Contact", "/contact/")]
 
 def crumbs_html(items):
     if len(items) < 2: return ""
@@ -445,7 +446,7 @@ BUY_STEPS = [
     ("Use your due diligence period", "Schedule the home inspection, termite letter, survey and insurance quote right away. If something isn't right, you can negotiate or walk away during this period."),
     ("Appraisal and loan approval", "Your lender orders the appraisal and finishes underwriting. James tracks these deadlines alongside the contract dates."),
     ("Close with an attorney", "South Carolina requires an attorney to handle the closing. You'll do a final walk-through, sign the documents and get your keys."),
-    ("Apply for the 4% assessment", "Right after closing, apply with your county assessor for the 4% legal residence rate on your primary home. It can cut your property tax bill significantly, and it isn't automatic."),
+    ("Apply for the 4% assessment", "After closing, apply with your county assessor for the 4% legal residence rate on your primary home. You'll need an SC driver's license and vehicle registration showing the new address, so movers from out of state should handle those first. The resources page lists every step and link."),
 ]
 SELL_STEPS = [
     ("Price it from real sales", "James prepares a comparative market analysis from recent nearby sales and adjusts for your home's condition and updates. Start with the online estimate if you just want a ballpark."),
@@ -563,6 +564,73 @@ def contact():
                 body, crumbs=[("Home", "/"), ("Contact", "/contact/")], nav_key="/contact/",
                 schema=[{"@type": "ContactPage", "url": absu("/contact/"), "about": {"@id": absu("/#agent")}}])
 
+COUNTY_LABEL = {"richland": "Richland County", "lexington": "Lexington County", "fairfield": "Fairfield County", "all": "Region-wide"}
+RES_FAQ = [
+    ("How do I find out who provides water and sewer to a home?",
+     "Water and sewer providers vary by neighborhood, and many rural homes use a well and septic system. Check the listing, ask the seller's agent, or use Richland County's utility provider list. James confirms the providers for any home before you make an offer."),
+    ("Do you pay property tax on cars in South Carolina?",
+     "Yes. Vehicles are taxed by the county each year, and you must pay the tax before the SC DMV will register or renew a vehicle. New residents have 45 days to register."),
+    ("When should I apply for the 4% legal residence rate?",
+     "As soon as you've closed and have an SC driver's license and vehicle registration showing your new address. Applications are due by the first penalty date on that year's tax notice. Apply online with the Richland or Lexington County assessor."),
+]
+
+def slugify(t):
+    return "".join(c if c.isalnum() else "-" for c in t.lower()).strip("-").replace("--", "-")
+
+def resources_page():
+    steps = "".join(
+        f'<li><h3>{e(h)}</h3><p>{e(p)}</p><p class="step-links">' + "".join(f'<a href="{e(url)}" rel="noopener">{e(n)}</a>' for n, url in links) + "</p></li>"
+        for h, p, links in NEW_RESIDENT_STEPS)
+    toc = "".join(f'<li><a href="#{slugify(g)}">{e(g)}</a></li>' for g, _, _ in RESOURCES)
+    groups = []
+    for g, intro, items in RESOURCES:
+        rows = "".join(
+            f'<li class="res" data-county="{c}"><a href="{e(url)}" rel="noopener">{e(n)}</a>'
+            f'<span class="res-county">{COUNTY_LABEL[c]}</span>' + (f'<p>{e(note)}</p>' if note else "") + "</li>"
+            for n, url, c, note in items)
+        groups.append(f'<section class="res-group" id="{slugify(g)}"><h2>{e(g)}</h2><p class="res-intro">{e(intro)}</p><ul class="res-list">{rows}</ul></section>')
+    checked = datetime.date.today().strftime("%B %-d, %Y")
+    body = f"""
+<section class="wrap page-head">
+  <h1>Columbia-area resources for homeowners and new residents</h1>
+  <p class="lede answer">Official links for property taxes, utilities, schools, permits and local services across Richland and Lexington counties, organized by what you need to get done. Moving to South Carolina? Start with the checklist, because the order matters.</p>
+</section>
+
+<section class="newres" aria-labelledby="newres-h">
+  <div class="wrap">
+    <h2 id="newres-h">New to South Carolina? Do these in order</h2>
+    <p class="newres-why">Each step unlocks the next. The 4% primary-residence tax rate can save you hundreds a year, but the counties won't approve it until your SC license and car registration show your new address.</p>
+    <ol class="steps steps-res">{steps}</ol>
+  </div>
+</section>
+
+<div class="wrap res-layout">
+  <aside class="res-tools" aria-label="Filter and jump">
+    <fieldset class="county-filter" hidden>
+      <legend>Show links for</legend>
+      <label><input type="radio" name="county" value="all" checked> Both counties</label>
+      <label><input type="radio" name="county" value="richland"> Richland County</label>
+      <label><input type="radio" name="county" value="lexington"> Lexington County</label>
+    </fieldset>
+    <p class="res-tools-h">Jump to</p>
+    <ul class="res-toc">{toc}</ul>
+    <p class="res-help">Not sure which county a home is in? Call or text James at <a href="{tel()}">{AGENT['phone_display']}</a>. He'll check the county, utilities and school assignment for any address.</p>
+  </aside>
+  <div class="res-main">
+    {"".join(groups)}
+    <section class="faq-preview res-faq"><h2>Quick answers</h2>{faq_items(RES_FAQ)}</section>
+    <p class="res-checked">Links checked {checked}. Spotted a broken one? <a href="{sms('Hi James, a link on your resources page is broken: ')}">Text James</a>.</p>
+  </div>
+</div>
+{cta_band("Questions about a specific home?")}
+"""
+    return page("/resources/", "Columbia & Lexington SC Homeowner Resources: Taxes, Utilities, Schools | James Nowlin",
+                "Official links for Richland and Lexington County property taxes, the 4% legal residence application, utilities, schools, permits and services, plus a step-by-step checklist for new SC residents.",
+                body, schema=[faq_schema(RES_FAQ),
+                    {"@type": "HowTo", "name": "What to do after moving to the Columbia, SC area",
+                     "step": [{"@type": "HowToStep", "position": i + 1, "name": h, "text": p} for i, (h, p, _) in enumerate(NEW_RESIDENT_STEPS)]}],
+                crumbs=[("Home", "/"), ("Resources", "/resources/")], nav_key="/resources/")
+
 def credits_page():
     rows = "".join(f'<li>{e(a["name"])}: <a href="{e(CREDITS[a["photo"]]["page"])}" rel="nofollow noopener">{e(CREDITS[a["photo"]]["title"])}</a> by {e(CREDITS[a["photo"]]["artist"] or "Unknown author")}, {e(CREDITS[a["photo"]]["license"])}</li>' for a in AREAS if a.get("_has_photo"))
     body = f"""<section class="wrap prose page-head"><h1>Photo credits</h1>
@@ -597,13 +665,13 @@ def main():
     build_images()
 
     pages = {"/": home(), "/areas/": areas_index(), "/buy/": buy(), "/sell/": sell(), "/faq/": faq_page(),
-             "/about/": about(), "/contact/": contact(), "/photo-credits/": credits_page()}
+             "/about/": about(), "/contact/": contact(), "/resources/": resources_page(), "/photo-credits/": credits_page()}
     for a in AREAS:
         p, h = area_page(a); pages[p] = h
     for p, h in pages.items(): write(p, h)
     write("/404.html", not_found())
 
-    prio = {"/": "1.0", "/areas/": "0.9", "/buy/": "0.8", "/sell/": "0.8", "/faq/": "0.8"}
+    prio = {"/": "1.0", "/areas/": "0.9", "/buy/": "0.8", "/sell/": "0.8", "/faq/": "0.8", "/resources/": "0.8"}
     sm = "".join(f"<url><loc>{absu(p)}</loc><lastmod>{TODAY}</lastmod><priority>{prio.get(p, '0.7' if p.startswith('/areas/') else '0.5')}</priority></url>"
                  for p in pages)
     write("/sitemap.xml", f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{sm}</urlset>')
@@ -625,6 +693,7 @@ def llms_txt():
               f"- [How buying a home works in South Carolina]({absu('/buy/')})",
               f"- [How selling a home works in South Carolina]({absu('/sell/')})",
               f"- [Frequently asked questions]({absu('/faq/')})",
+              f"- [Homeowner and new-resident resources: taxes, utilities, schools]({absu('/resources/')})",
               f"- [About James Nowlin]({absu('/about/')})",
               f"- [Contact]({absu('/contact/')})", "",
               "## Key facts",
