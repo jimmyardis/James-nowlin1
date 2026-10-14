@@ -16,8 +16,8 @@ sys.path.insert(0, os.path.join(ROOT, "src"))
 from content import AGENT, AREAS, FAQ, SITE_NAME  # noqa: E402
 from resources import NEW_RESIDENT_STEPS, RESOURCES  # noqa: E402
 
-SITE_URL = os.environ.get("SITE_URL", "https://jimmyardis.github.io/james-nowlin1").rstrip("/")
-BASE = os.environ.get("BASE_PATH", "/james-nowlin1").rstrip("/")
+SITE_URL = os.environ.get("SITE_URL", "https://jimmyardis.github.io/James-nowlin1").rstrip("/")
+BASE = os.environ.get("BASE_PATH", "/James-nowlin1").rstrip("/")
 OUT = os.path.join(ROOT, "docs")
 TMP = os.path.join(ROOT, ".tmp")
 TODAY = datetime.date.today().isoformat()

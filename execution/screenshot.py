@@ -6,7 +6,7 @@ Writes .tmp/shots/<name>-desktop.png and -mobile.png, and prints console errors.
 import http.server, os, socketserver, sys, threading
 from playwright.sync_api import sync_playwright
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE = os.environ.get("BASE_PATH", "/james-nowlin1")
+BASE = os.environ.get("BASE_PATH", "/James-nowlin1")
 serve = os.path.join(ROOT, ".tmp", "serve"); os.makedirs(serve, exist_ok=True)
 link = os.path.join(serve, BASE.strip("/") or "site")
 if not os.path.islink(link): os.symlink(os.path.join(ROOT, "docs"), link)

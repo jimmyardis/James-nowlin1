@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://jimmyardis.github.io/james-nowlin1/sitemap.xml
+Sitemap: https://jimmyardis.github.io/James-nowlin1/sitemap.xml
