@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jimmyardis.github.io/james-nowlin1/sitemap.xml
